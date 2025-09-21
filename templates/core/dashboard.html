@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Dashboard Principal</h2>
+            </div>
+            <div class="card-body">
+                <p>Bienvenido/a, {{ user.get_full_name }}.</p>
+                
+                {% if user.tipo_usuario == 'admin' %}
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Usuarios</h5>
+                                <p class="card-text">Total: {{ total_usuarios }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Docentes</h5>
+                                <p class="card-text">Total: {{ total_docentes }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Estudiantes</h5>
+                                <p class="card-text">Total: {{ total_estudiantes }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Asistencias Hoy</h5>
+                                <p class="card-text">Total: {{ presentes_hoy }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <h4>Tu historial de asistencias recientes</h4>
+                    {% if asistencias %}
+                    <ul class="list-group">
+                        {% for asistencia in asistencias %}
+                        <li class="list-group-item">
+                            {{ asistencia.fecha }} - 
+                            Entrada: {{ asistencia.hora_entrada|time:"H:i" }}
+                            {% if asistencia.hora_salida %}
+                            - Salida: {{ asistencia.hora_salida|time:"H:i" }}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No tienes registros de asistencia recientes.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

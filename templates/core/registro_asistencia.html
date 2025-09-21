@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="bi bi-check-circle"></i> Registro de Asistencia</h4>
+            </div>
+            <div class="card-body text-center">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                    </div>
+                    <p>{{ mensaje }}</p>
+                {% else %}
+                    <div class="alert alert-{% if tipo == 'entrada' %}success{% elif tipo == 'salida' %}info{% else %}warning{% endif %}">
+                        <h5>{{ mensaje }}</h5>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <strong>Usuario:</strong><br>
+                            {{ usuario.get_full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Fecha:</strong><br>
+                            {{ fecha }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Hora de entrada:</strong><br>
+                            {% if hora_entrada %}
+                                {{ hora_entrada|time:"H:i:s" }}
+                            {% else %}
+                                No registrada
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Hora de salida:</strong><br>
+                            {% if hora_salida %}
+                                {{ hora_salida|time:"H:i:s" }}
+                            {% else %}
+                                No registrada
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-muted">
+                            {% if tipo == 'entrada' %}
+                                <i class="bi bi-info-circle"></i> Recuerda registrar tu salida al finalizar.
+                            {% elif tipo == 'salida' %}
+                                <i class="bi bi-info-circle"></i> ¡Hasta pronto!
+                            {% else %}
+                                <i class="bi bi-info-circle"></i> Ya completaste tu registro de asistencia hoy.
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+                    {% if not error %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Mi Perfil</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.foto %}
+                    <img src="{{ user.foto.url }}" class="rounded-circle mb-3" width="150" height="150">
+                {% else %}
+                    <img src="{% static 'img/default-avatar.png' %}" class="rounded-circle mb-3" width="150" height="150">
+                {% endif %}
+                
+                <h4>{{ user.get_full_name }}</h4>
+                <p class="text-muted">{{ user.get_tipo_usuario_display }}</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'editar_perfil' %}" class="btn btn-outline-primary">Editar Perfil</a>
+                    <a href="{% url 'cambiar_password' %}" class="btn btn-outline-secondary">Cambiar Contraseña</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Mi Código QR</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ qr_url }}" 
+                     alt="Código QR" class="img-fluid">
+                <p class="mt-2 small">Escanea este código para registrar asistencia</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Nombre completo:</th>
+                        <td>{{ user.get_full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Usuario:</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono:</th>
+                        <td>{{ user.telefono|default:"No especificado" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Rol:</th>
+                        <td>{{ user.get_tipo_usuario_display }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Asistencia de Hoy</h5>
+            </div>
+            <div class="card-body">
+                {% if asistencia_hoy %}
+                    <div class="alert alert-info">
+                        <strong>Entrada:</strong> {{ asistencia_hoy.hora_entrada|time:"H:i" }}
+                        {% if asistencia_hoy.hora_salida %}
+                            | <strong>Salida:</strong> {{ asistencia_hoy.hora_salida|time:"H:i" }}
+                        {% else %}
+                            | <strong>Estado:</strong> En clase
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        No has registrado asistencia hoy.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
