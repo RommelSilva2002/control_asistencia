@@ -18,35 +18,41 @@
                     {% endfor %}
                 {% endif %}
 
-                <form method="post" enctype="multipart/form-data">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Por favor corrige los siguientes errores:</strong>
+                        <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>
+                                    {% if field == '__all__' %}
+                                        {{ error }}
+                                    {% else %}
+                                        <strong>{{ field|title }}:</strong> {{ error }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" id="perfil-form">
                     {% csrf_token %}
                     
-                    {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <strong>Por favor corrige los siguientes errores:</strong>
-                            <ul>
-                            {% for field, errors in form.errors.items %}
-                                {% for error in errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="id_first_name" class="form-label">Nombres</label>
                                 <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" 
-                                       class="form-control" id="id_first_name">
+                                       class="form-control" id="id_first_name" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="id_last_name" class="form-label">Apellidos</label>
                                 <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" 
-                                       class="form-control" id="id_last_name">
+                                       class="form-control" id="id_last_name" required>
                             </div>
                         </div>
                     </div>
@@ -54,7 +60,7 @@
                     <div class="mb-3">
                         <label for="id_email" class="form-label">Correo electrónico</label>
                         <input type="email" name="email" value="{{ form.email.value|default:'' }}" 
-                               class="form-control" id="id_email">
+                               class="form-control" id="id_email" required>
                     </div>
 
                     <div class="mb-3">
@@ -63,16 +69,44 @@
                                class="form-control" id="id_telefono">
                     </div>
 
+                    <!-- Campo tipo_usuario (oculto pero necesario) -->
+                    <input type="hidden" name="tipo_usuario" value="{{ user.tipo_usuario }}" id="id_tipo_usuario">
+
+                    <!-- Campo facultad - Solo visible para docentes/estudiantes -->
+                    {% if user.tipo_usuario == 'docente' or user.tipo_usuario == 'estudiante' %}
+                    <div class="mb-3" id="facultad-field">
+                        <label for="id_facultad" class="form-label">Facultad *</label>
+                        <select name="facultad" class="form-control" id="id_facultad" required>
+                            <option value="">-- Seleccione Facultad --</option>
+                            <option value="FIE" {% if user.facultad == 'Facultad de Informática y Electrónica' %}selected{% endif %}>Facultad de Informática y Electrónica</option>
+                            <option value="FADE" {% if user.facultad == 'Facultad Administración de Empresas' %}selected{% endif %}>Facultad Administración de Empresas</option>
+                            <option value="FCS" {% if user.facultad == 'Facultad de Ciencias' %}selected{% endif %}>Facultad de Ciencias</option>
+                            <option value="FCP" {% if user.facultad == 'Facultad de Ciencias Pecuarias' %}selected{% endif %}>Facultad de Ciencias Pecuarias</option>
+                            <option value="FME" {% if user.facultad == 'Facultad de Mecánica' %}selected{% endif %}>Facultad de Mecánica</option>
+                            <option value="FNR" {% if user.facultad == 'Facultad de Recursos Naturales' %}selected{% endif %}>Facultad de Recursos Naturales</option>
+                            <option value="FSP" {% if user.facultad == 'Facultad de Salud Pública' %}selected{% endif %}>Facultad de Salud Pública</option>
+                        </select>
+                        <div class="form-text">Seleccione su facultad (obligatorio para docentes y estudiantes)</div>
+                    </div>
+                    {% else %}
+                    <input type="hidden" name="facultad" value="">
+                    {% endif %}
+
                     <div class="mb-3">
                         <label for="id_foto" class="form-label">Foto de perfil</label>
-                        <input type="file" name="foto" class="form-control" id="id_foto">
+                        <input type="file" name="foto" class="form-control" id="id_foto" accept="image/*">
+                        
                         {% if user.foto %}
                             <div class="mt-2">
-                                <img src="{{ user.foto.url }}" alt="Foto actual" class="img-thumbnail" width="100">
+                                <img src="{{ user.foto.url }}" alt="Foto actual" class="img-thumbnail" width="100" id="foto-preview">
                                 <div class="form-check mt-2">
                                     <input class="form-check-input" type="checkbox" name="foto-clear" id="foto-clear_id">
                                     <label class="form-check-label" for="foto-clear_id">Eliminar foto actual</label>
                                 </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-2">
+                                <img src="{% static 'img/default-avatar.png' %}" alt="Foto predeterminada" class="img-thumbnail" width="100" id="foto-preview">
                             </div>
                         {% endif %}
                     </div>
@@ -86,4 +120,54 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Previsualización de foto
+    const fotoInput = document.getElementById('id_foto');
+    const fotoPreview = document.getElementById('foto-preview');
+    
+    if (fotoInput && fotoPreview) {
+        fotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fotoPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Validación del formulario
+    const form = document.getElementById('perfil-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Por favor complete todos los campos obligatorios.');
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+</style>
 {% endblock %}

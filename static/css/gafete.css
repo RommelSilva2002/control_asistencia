@@ -1,0 +1,216 @@
+/* Estilos para el gafete*/
+.gafete-container {
+    perspective: 1000px;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.gafete {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15),
+                0 0 0 3px #2c3e50,
+                0 0 0 6px #3498db,
+                0 0 0 9px #2c3e50;
+    border: 2px solid #34495e;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+}
+
+.gafete:hover {
+    transform: translateY(-5px) rotateX(5deg);
+}
+
+.gafete-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.gafete-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3498db, transparent);
+}
+
+.institucion-nombre {
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.institucion-sub {
+    color: #7f8c8d;
+    font-size: 12px;
+    margin: 5px 0 0 0;
+}
+
+.gafete-body {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.foto-container {
+    flex-shrink: 0;
+}
+
+.foto-gafete {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+    background: linear-gradient(45deg, #dfe6e9, #b2bec3);
+}
+
+.info-container {
+    flex-grow: 1;
+}
+
+.nombre-usuario {
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rol-usuario {
+    background: #3498db;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #2c3e50;
+}
+
+.info-list strong {
+    color: #34495e;
+    min-width: 80px;
+    display: inline-block;
+}
+
+.gafete-footer {
+    margin-top: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.gafete-footer::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3498db, transparent);
+}
+
+.codigo-qr-container {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    border: 2px solid #dfe6e9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.qr-texto {
+    font-size: 10px;
+    color: #7f8c8d;
+    margin-top: 8px;
+    text-align: center;
+}
+
+/* Elementos de seguridad del gafete */
+.sello-seguridad {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #e74c3c 0%, #c0392b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+    transform: rotate(15deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.patron-fondo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 80% 80%, rgba(231, 76, 60, 0.1) 0%, transparent 20%);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 15px;
+}
+
+/* Estado de asistencia */
+.estado-asistencia {
+    background: #ecf0f1;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border-left: 4px solid #3498db;
+}
+
+.estado-titulo {
+    color: #2c3e50;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .gafete-body {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .gafete {
+        padding: 20px;
+    }
+    
+    .nombre-usuario {
+        font-size: 18px;
+    }
+}

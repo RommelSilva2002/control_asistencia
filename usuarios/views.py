@@ -6,6 +6,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from .models import Usuario
 from django.contrib.auth import logout
 from .forms import LoginForm, UserUpdateForm
+from django import forms
 
 
 def login_personalizado(request):
@@ -53,13 +54,25 @@ def editar_perfil(request):
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            
+            # Para admin, asegurar que facultad sea None
+            if user.tipo_usuario == 'admin':
+                user.facultad = None
+            
+            user.save()
             messages.success(request, 'Perfil actualizado correctamente.')
             return redirect('perfil')
+        else:
+            # Mostrar errores específicos
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
         form = UserUpdateForm(instance=request.user)
     
-    return render(request, 'usuarios/editar_perfil.html', {'form': form})
+    return render(request, 'usuarios/editar_perfil.html', {
+        'form': form,
+        'user': request.user  # Pasar el usuario al contexto
+    })
 
 @login_required
 def cambiar_password(request):

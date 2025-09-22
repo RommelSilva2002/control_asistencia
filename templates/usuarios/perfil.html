@@ -1,94 +1,160 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/gafete.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Mi Perfil</h5>
-            </div>
-            <div class="card-body text-center">
-                {% if user.foto %}
-                    <img src="{{ user.foto.url }}" class="rounded-circle mb-3" width="150" height="150">
-                {% else %}
-                    <img src="{% static 'img/default-avatar.png' %}" class="rounded-circle mb-3" width="150" height="150">
-                {% endif %}
-                
-                <h4>{{ user.get_full_name }}</h4>
-                <p class="text-muted">{{ user.get_tipo_usuario_display }}</p>
-                
-                <div class="d-grid gap-2">
-                    <a href="{% url 'editar_perfil' %}" class="btn btn-outline-primary">Editar Perfil</a>
-                    <a href="{% url 'cambiar_password' %}" class="btn btn-outline-secondary">Cambiar Contraseña</a>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-person-badge"></i> Mi Gafete de Identificación</h2>
+                <div>
+                    <a href="{% url 'editar_perfil' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'cambiar_password' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-key"></i> Contraseña
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5>Mi Código QR</h5>
+
+            <!-- Gafete de Identificación -->
+            <div class="gafete-container">
+                <div class="gafete">
+                    <!-- Elementos de seguridad -->
+                    <div class="patron-fondo"></div>
+                    <div class="sello-seguridad">VÁLIDO</div>
+                    
+                    <!-- Encabezado del gafete -->
+                    <div class="gafete-header">
+                        <h3 class="institucion-nombre">SISTEMA DE ASISTENCIA</h3>
+                        <p class="institucion-sub">Identificación Oficial</p>
+                    </div>
+
+                    <!-- Cuerpo del gafete -->
+                    <div class="gafete-body">
+                        <!-- Foto -->
+                        <div class="foto-container">
+                            {% if user.foto %}
+                                <img src="{{ user.foto.url }}" class="foto-gafete" alt="Foto de {{ user.get_full_name }}">
+                            {% else %}
+                                <img src="{% static 'img/default-avatar.png' %}" class="foto-gafete" alt="Foto predeterminada">
+                            {% endif %}
+                        </div>
+
+                        <!-- Información -->
+                        <div class="info-container">
+                            <h4 class="nombre-usuario">{{ user.get_full_name }}</h4>
+                            <span class="rol-usuario">{{ user.get_tipo_usuario_display }}</span>
+                            
+                            <ul class="info-list">
+                                <li><strong>ID:</strong> {{ user.username }}</li>
+                                <li><strong>Email:</strong> {{ user.email }}</li>
+                                {% if user.telefono %}
+                                <li><strong>Teléfono:</strong> {{ user.telefono }}</li>
+                                {% endif %}
+                                {% if user.facultad %}
+                                <li><strong>Facultad:</strong> {{ user.facultad_display }}</li>
+                                {% endif %}
+                                <li><strong>Estado:</strong> <span class="text-success">Activo</span></li>
+                                <li><strong>Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Pie del gafete con QR -->
+                    <div class="gafete-footer">
+                        <div class="codigo-qr-container">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ qr_url }}" 
+                                 alt="Código QR de identificación" width="100" height="100">
+                        </div>
+                        <p class="qr-texto">Escanear para registro de asistencia</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-body text-center">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ qr_url }}" 
-                     alt="Código QR" class="img-fluid">
-                <p class="mt-2 small">Escanea este código para registrar asistencia</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5>Información Personal</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <th width="30%">Nombre completo:</th>
-                        <td>{{ user.get_full_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Usuario:</th>
-                        <td>{{ user.username }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email:</th>
-                        <td>{{ user.email }}</td>
-                    </tr>
-                    <tr>
-                        <th>Teléfono:</th>
-                        <td>{{ user.telefono|default:"No especificado" }}</td>
-                    </tr>
-                    <tr>
-                        <th>Rol:</th>
-                        <td>{{ user.get_tipo_usuario_display }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5>Asistencia de Hoy</h5>
-            </div>
-            <div class="card-body">
+
+            <!-- Estado de Asistencia Actual -->
+            <div class="estado-asistencia">
+                <h5 class="estado-titulo"><i class="bi bi-calendar-check"></i> Asistencia de Hoy</h5>
                 {% if asistencia_hoy %}
-                    <div class="alert alert-info">
-                        <strong>Entrada:</strong> {{ asistencia_hoy.hora_entrada|time:"H:i" }}
-                        {% if asistencia_hoy.hora_salida %}
-                            | <strong>Salida:</strong> {{ asistencia_hoy.hora_salida|time:"H:i" }}
-                        {% else %}
-                            | <strong>Estado:</strong> En clase
-                        {% endif %}
+                    <div class="alert alert-info mb-0">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Entrada:</strong> {{ asistencia_hoy.hora_entrada|time:"H:i" }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Salida:</strong> 
+                                {% if asistencia_hoy.hora_salida %}
+                                    {{ asistencia_hoy.hora_salida|time:"H:i" }}
+                                {% else %}
+                                    <span class="text-warning">En clase</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Estado:</strong> 
+                                {% if asistencia_hoy.hora_salida %}
+                                    <span class="text-success">Completado</span>
+                                {% else %}
+                                    <span class="text-primary">Activo</span>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 {% else %}
-                    <div class="alert alert-warning">
-                        No has registrado asistencia hoy.
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> No has registrado asistencia hoy.
                     </div>
                 {% endif %}
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="bi bi-info-circle"></i> Información del Sistema</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="small mb-1">• Este gafete es su identificación oficial para el sistema de control de asistencia.</p>
+                            <p class="small mb-1">• Mantenga su código QR seguro y no lo comparta.</p>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="bi bi-shield-check"></i> Medidas de Seguridad</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="small mb-1">• Código QR único e intransferible</p>
+                            <p class="small mb-1">• Foto de identificación actualizada</p>
+                            <p class="small mb-0">• Sello de validación holográfico</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Efecto de elevación al pasar el mouse
+document.addEventListener('DOMContentLoaded', function() {
+    const gafete = document.querySelector('.gafete');
+    
+    gafete.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px) rotateX(5deg)';
+    });
+    
+    gafete.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) rotateX(0)';
+    });
+});
+</script>
 {% endblock %}
